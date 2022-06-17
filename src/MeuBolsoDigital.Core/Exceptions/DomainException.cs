@@ -1,5 +1,6 @@
 namespace MeuBolsoDigital.Core.Exceptions;
 
+[Serializable]
 public class DomainException : Exception
 {
     public DomainException()
