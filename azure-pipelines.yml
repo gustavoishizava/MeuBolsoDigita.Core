@@ -1,3 +1,5 @@
+name: $(majorMinorVersion).$(semanticVersion)
+
 trigger:
 - master
 
@@ -8,6 +10,8 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  majorMinorVersion: 1.0
+  semanticVersion: $[counter(variables['majorMinorVersion'], 0)]
 
 steps:
 - task: UseDotNet@2
@@ -41,6 +45,7 @@ steps:
     command: 'build'
 
 - task: DotNetCoreCLI@2
+  displayName: 'Unit tests'
   inputs:
     command: 'test'
     projects: '**/*.UnitTests/*.csproj'
@@ -59,3 +64,18 @@ steps:
   displayName: 'Sonar publish'
   inputs:
     pollingTimeoutSec: '300'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Dotnet NuGet pack'
+  inputs:
+    command: 'pack'
+    packagesToPack: '**/MeuBolsoDigital.Core/*.csproj'
+    versioningScheme: 'byBuildNumber'
+
+- task: NuGetCommand@2
+  displayName: 'NuGet push'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    nuGetFeedType: 'external'
+    publishFeedCredentials: 'Nuget Org'
