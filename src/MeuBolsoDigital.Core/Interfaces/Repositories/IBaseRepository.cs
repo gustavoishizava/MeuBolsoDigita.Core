@@ -5,8 +5,8 @@ namespace MeuBolsoDigital.Core.Interfaces.Repositories
     public interface IBaseRepository<TEntity> where TEntity : IAggregateRoot
     {
         Task<TEntity> GetByIdAsync(Guid id);
-        void Add(TEntity entity);
-        void Update(TEntity entity);
-        void Remove(TEntity entity);
+        Task AddAsync(TEntity entity);
+        Task UpdateAsync(TEntity entity);
+        Task RemoveAsync(TEntity entity);
     }
 }
